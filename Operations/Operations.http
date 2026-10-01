@@ -1,0 +1,16 @@
+@Operations_HostAddress = http://localhost:5183
+
+GET {{Operations_HostAddress}}/operations/
+Accept: application/json
+
+###
+
+POST {{Operations_HostAddress}}/operations/
+Content-Type: application/json
+
+{
+  "name": "Audit Logging",
+  "description": "Log all user security actions"
+}
+
+###

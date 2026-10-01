@@ -1,0 +1,9 @@
+{
+  "name": "blacklight-frontend",
+  "version": "1.0.0",
+  "description": "Blacklight Enterprise Operations Portal and Copilot UI",
+  "type": "module",
+  "scripts": {
+    "dev": "npx serve . -l 5173"
+  }
+}

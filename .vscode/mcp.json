@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"Hivemind": {
+			"url": "http://localhost:5106/mcp",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}

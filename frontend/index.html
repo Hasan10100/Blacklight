@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blacklight Enterprise Operations Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+      <div class="brand">
+        <div class="logo-icon">
+          <i data-lucide="shield-alert"></i>
+        </div>
+        <div class="brand-text">
+          <h1>BLACKLIGHT</h1>
+          <span class="badge-env">LOCAL ENTERPRISE</span>
+        </div>
+      </div>
+
+      <!-- Health Check Pills -->
+      <div class="health-cluster">
+        <div class="health-item" id="health-api" title="C# Operations API (:5183)">
+          <span class="status-dot"></span>
+          <span class="health-label">Operations API</span>
+        </div>
+        <div class="health-item" id="health-mcp" title="Hivemind C# MCP (:5106)">
+          <span class="status-dot"></span>
+          <span class="health-label">Hivemind MCP</span>
+        </div>
+        <div class="health-item" id="health-agent" title="Inkeep Agent Runtime (:3002)">
+          <span class="status-dot"></span>
+          <span class="health-label">Inkeep AI</span>
+        </div>
+        <div class="health-item" id="health-db" title="PostgreSQL Database (:5434)">
+          <span class="status-dot"></span>
+          <span class="health-label">PostgreSQL</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <a href="http://localhost:3000" target="_blank" class="btn-ghost">
+          <i data-lucide="external-link"></i> Inkeep Dashboard
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Welcome Hero Banner -->
+      <div class="hero-banner">
+        <div class="hero-content">
+          <div class="hero-tag">
+            <i data-lucide="sparkles"></i> AI-Orchestrated Operations Control Plane
+          </div>
+          <h2>Live Database Operations</h2>
+          <p>
+            Real-time PostgreSQL operations synchronized between the <strong>C# .NET 9 Backend</strong> and the <strong>Inkeep AI Agent</strong>. Ask the copilot to view, analyze, or schedule new business operations.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <button id="btn-refresh" class="btn-secondary">
+            <i data-lucide="refresh-cw"></i> Refresh Data
+          </button>
+          <button id="btn-create-modal" class="btn-primary">
+            <i data-lucide="plus"></i> New Operation
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon purple">
+            <i data-lucide="layers"></i>
+          </div>
+          <div class="stat-data">
+            <span class="stat-title">Total Operations</span>
+            <span class="stat-value" id="stat-total">0</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon cyan">
+            <i data-lucide="activity"></i>
+          </div>
+          <div class="stat-data">
+            <span class="stat-title">Active / Running</span>
+            <span class="stat-value" id="stat-active">0</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon emerald">
+            <i data-lucide="bot"></i>
+          </div>
+          <div class="stat-data">
+            <span class="stat-title">AI MCP Execution</span>
+            <span class="stat-value">Connected</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon amber">
+            <i data-lucide="database"></i>
+          </div>
+          <div class="stat-data">
+            <span class="stat-title">Storage Mode</span>
+            <span class="stat-value">PostgreSQL Local</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Operations Data Section -->
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">
+            <h3>Registered Operations</h3>
+            <span class="table-subtitle">Live records from PostgreSQL database via C# API</span>
+          </div>
+          <div class="table-tools">
+            <div class="search-box">
+              <i data-lucide="search"></i>
+              <input type="text" id="table-search" placeholder="Filter operations..." />
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Operation Name</th>
+                <th>Description</th>
+                <th>Created At</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="operations-tbody">
+              <tr class="loading-row">
+                <td colspan="5">
+                  <div class="loading-spinner"></div>
+                  <span>Fetching live records from C# backend...</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- Create Operation Modal -->
+    <div id="modal-backdrop" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Create New Operation</h3>
+          <button id="btn-close-modal" class="btn-icon">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <form id="create-operation-form">
+          <div class="form-group">
+            <label for="op-name">Operation Name</label>
+            <input type="text" id="op-name" required placeholder="e.g., Database Index Rebuild" />
+          </div>
+          <div class="form-group">
+            <label for="op-desc">Description</label>
+            <textarea id="op-desc" required rows="3" placeholder="Describe the purpose and parameters of this operation..."></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" id="btn-cancel-modal" class="btn-ghost">Cancel</button>
+            <button type="submit" class="btn-primary">
+              <i data-lucide="save"></i> Save to Database
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Floating AI Copilot Widget Button -->
+    <div class="floating-widget-container">
+      <button id="copilot-toggle-btn" class="copilot-fab" aria-label="Open AI Copilot">
+        <div class="fab-glow"></div>
+        <div class="fab-icon">
+          <i data-lucide="bot"></i>
+        </div>
+        <span class="fab-label">Blacklight Copilot</span>
+        <span class="fab-pulse"></span>
+      </button>
+
+      <!-- Chat Drawer Window -->
+      <div id="copilot-drawer" class="copilot-drawer hidden">
+        <div class="drawer-header">
+          <div class="drawer-title-group">
+            <div class="ai-avatar">
+              <i data-lucide="sparkles"></i>
+            </div>
+            <div>
+              <h4>Operations Copilot</h4>
+              <span class="ai-status">Connected to Hivemind MCP</span>
+            </div>
+          </div>
+          <div class="drawer-actions">
+            <button id="btn-clear-chat" class="btn-icon" title="Clear Conversation">
+              <i data-lucide="trash-2"></i>
+            </button>
+            <button id="btn-close-drawer" class="btn-icon" title="Minimize">
+              <i data-lucide="chevron-down"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Suggestion Chips -->
+        <div class="prompt-chips">
+          <button class="chip" data-prompt="What operations are currently recorded in the system?">
+            📋 List all operations
+          </button>
+          <button class="chip" data-prompt="Create a new operation for Nightly Database Backup scheduled at 02:00 AM.">
+            ➕ Schedule DB Backup
+          </button>
+          <button class="chip" data-prompt="Create an operation for System Security Vulnerability Scan.">
+            🛡️ Security Audit
+          </button>
+        </div>
+
+        <!-- Chat Message Log -->
+        <div id="chat-messages" class="chat-messages">
+          <div class="message ai-message">
+            <div class="message-content">
+              👋 <strong>Hello! I am your Blacklight Operations Assistant.</strong><br />
+              I have live access to your <strong>C# .NET 9 MCP server</strong> and <strong>PostgreSQL database</strong>.<br /><br />
+              Ask me to query operations, inspect system status, or create new operations!
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Input Bar -->
+        <form id="chat-form" class="chat-input-bar">
+          <input
+            type="text"
+            id="chat-input"
+            placeholder="Ask AI Copilot to run or check operations..."
+            autocomplete="off"
+            required
+          />
+          <button type="submit" id="btn-send-chat" class="btn-send" aria-label="Send message">
+            <i data-lucide="send"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
